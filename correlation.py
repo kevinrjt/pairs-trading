@@ -24,6 +24,7 @@ def main():
     stocks_num = len(data)
     print(stocks_num)
     return
+
     logging.info('%s stocks prices loaded.' % stocks_num)
     total = stocks_num * (stocks_num - 1) / 2
 
