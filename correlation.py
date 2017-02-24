@@ -1,16 +1,17 @@
-from util import *
 import logging
 import os
+
 import pandas as pd
+
+from util import *
 
 def load_data():
     codes = get_codes()
     data = {}
     for code in codes:
-        if os.path.exists(get_data_file(code)):
-            price = get_price(code)
-            if len(price) >= 1202:
-                data[code] = price
+        price = get_price(code)
+        if price is not None and len(price) >= 1202:
+            data[code] = price
     return data
 
 def main():
