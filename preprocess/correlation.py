@@ -1,17 +1,19 @@
+import sys
+sys.path.append('../')
+from util import *
+
 import logging
 import os
 
 import pandas as pd
-
-from util import *
 
 def load_data():
     codes = get_codes()
     data = {}
     for code in codes:
         price = get_price(code)
-        if price is not None and len(price) >= 1202:
-            data[code] = price
+        if price is not None and len(price) >= 1200:
+            data[code] = split_by_date(price, '2015-12-31')[0]
     return data
 
 def main():
@@ -24,7 +26,7 @@ def main():
     data = load_data()
     stocks_num = len(data)
     print(stocks_num)
-    return
+    # return
 
     logging.info('%s stocks prices loaded.' % stocks_num)
     total = stocks_num * (stocks_num - 1) / 2
@@ -49,10 +51,12 @@ def main():
     for i in range(start_index, stocks_num):
         for j in range(i + 1, stocks_num):
             corr = cal_correlation(data[codes[i]], data[codes[j]])
-            corrs.loc[counter] = (codes[i], codes[j], corr)
+            if corr >= 0.9:
+                corrs.loc[counter] = (codes[i], codes[j], corr)
             counter += 1
         corrs.to_csv(CORRELATION_DATA, index=False)
         logging.info('Stock %s\t%.2f.' % (codes[i], 100 * counter / total))
 
 if __name__ == '__main__':
-    main()
+    pass
+    # main()

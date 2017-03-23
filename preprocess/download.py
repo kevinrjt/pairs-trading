@@ -1,6 +1,10 @@
+import sys
+sys.path.append('../')
 from util import *
+
 import logging
 import os
+
 import tushare as ts
 
 START = '1990-01-01'
@@ -29,4 +33,5 @@ def main():
     download_data()
 
 if __name__ == '__main__':
-    main()
+    pass
+    # main()

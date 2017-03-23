@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 import os
 
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -36,7 +39,33 @@ def cal_correlation(p1, p2):
     df = merge_prices(p1, p2)
     return df.close_x.corr(df.close_y)
 
+def plot_series(s, xlabel, ylabel):
+    dates = [mdates.datestr2num(d) for d in s.date]
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y/%m/%d'))
+    plt.gcf().autofmt_xdate()
+    plt.plot(dates, s)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+
+def plot_prices(code1, code2):
+    p1 = get_price(code1)
+    p2 = get_price(code2)
+    ps = merge_prices(p1, p2)
+    ps = split_by_date(ps, '2015-12-31')[0]
+    x = ps.close_x
+    y = ps.close_y
+    dates = [mdates.datestr2num(d) for d in ps.date]
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y/%m/%d'))
+    plt.gcf().autofmt_xdate()
+    plt.plot(dates, x)
+    plt.plot(dates, y)
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.show()
+
 def test():
+    plot_prices('600033', '601188')
     p1 = get_price('000661')
     p2 = get_price('000826')
     df = merge_prices(p1, p2)
