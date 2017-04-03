@@ -13,7 +13,7 @@ def EGTest(x, y):
     return adf.pvalue, result.params
 
 def test():
-    df = merge_prices(get_price('000008'), get_price('600446'))
+    df = merge_prices(get_price('300033'), get_price('300059'))
     train_df, test_df = split_by_date(df, '2015-12-31')
 
     x, y = train_df.close_x, train_df.close_y

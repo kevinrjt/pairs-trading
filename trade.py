@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
+import os
+
 from cointegration import EGTest
 from lstm import train_model, predict_next
 from util import *
@@ -9,6 +12,8 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+TRADING_RESULTS = './results.csv'
 
 def backtest(train, test, params, window, model=None, long_term='garch', short_term='', m=1.5, n=0.5, r=0.8, s=0.6):
     transactions = []
@@ -66,7 +71,7 @@ def eval_returns(transactions):
         rets += [np.power(1 + rate, 1 / days) - 1] * days
     totol = money - 1
     annual = 0 if total_days == 0 else (money - 1) * 365 / total_days
-    sharp = np.mean(rets) / np.sqrt(np.var(rets) + 1e-8)
+    sharp = 0 if len(rets) == 0 else np.mean(rets) / np.sqrt(np.var(rets) + 1e-8)
     return totol, annual, sharp
 
 def trade(code1, code2, window=100):
@@ -92,35 +97,26 @@ def trade(code1, code2, window=100):
     return result
 
 def test():
-    transactions = [(0.080167086151783556, '2016-01-25', '2016-01-27', 'l'),
-                    (0.068495327325024558, '2016-01-28', '2016-02-26', 's'),
-                    (-0.00056971374473218706, '2016-02-26', '2016-03-22', 'l'), 
-                    (0.036164446581118947, '2016-03-28', '2016-04-05', 'l'), 
-                    (0.15764461837606525, '2016-04-13', '2016-05-13', 's'), 
-                    (-0.0091411001116070336, '2016-07-05', '2016-07-14', 's'), 
-                    (-0.02382616826889639, '2016-07-29', '2016-08-11', 's'), 
-                    (0.0067729583143217404, '2016-08-23', '2016-09-12', 's'), 
-                    (0.019087847354597114, '2016-09-19', '2016-09-27', 's'), 
-                    (0.0039180094149781656, '2016-10-24', '2016-12-30', 'l')]
+    transactions = []
     print('%.4f, %.4f, %.4f' % eval_returns(transactions))
 
 def main():
-    results = []
     columns = ['pair','strategy','accuracy', 'transactions', 'totol', 'annual', 'sharp']
+    if not os.path.exists(TRADING_RESULTS):
+        pd.DataFrame(columns=columns).to_csv(TRADING_RESULTS, index=False)
     counter = 0
     pairs = get_pairs()
     for code1, code2 in pairs:
         print(code1, code2)
         try:
-            result = trade(code1, code2)
+            result = trade(code1, code2, 100)
             if result is not None:
-                results += result
                 counter += 1
-                if counter % 1 == 0:
-                    pd.DataFrame(results, columns=columns).to_csv('results.csv', index=False)
+                with open(TRADING_RESULTS, 'a') as f:
+                    pd.DataFrame(result, columns=columns).to_csv(f, index=False, header=False)
         except Exception:
             pass
-    pd.DataFrame(results, columns=columns).to_csv('results.csv', index=False)
 
 if __name__ == '__main__':
+    # test()
     main()
