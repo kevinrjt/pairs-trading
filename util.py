@@ -79,13 +79,13 @@ def plot_prices(code1, code2):
     plt.show()
 
 def test():
-    # plot_prices('600033', '601188')
-    # p1 = get_price('000661')
-    # p2 = get_price('000826')
+    # plot_prices('000008', '600446')
+    p1 = get_price('000008')
+    p2 = get_price('600446')
     # df = merge_prices(p1, p2)
     # df1, df2 = split_by_date(df, '2015-12-31')
     # print(len(df), len(df1), len(df2))
-    pprint(get_pairs())
+    pprint(cal_correlation(p1, p2))
 
 if __name__ == '__main__':
     test()

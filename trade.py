@@ -71,8 +71,8 @@ def eval_returns(transactions):
         rets += [np.power(1 + rate, 1 / days) - 1] * days
     totol = money - 1
     annual = 0 if total_days == 0 else (money - 1) * 365 / total_days
-    sharp = 0 if len(rets) == 0 else np.mean(rets) / np.sqrt(np.var(rets) + 1e-8)
-    return totol, annual, sharp
+    sharpe = 0 if len(rets) == 0 else np.mean(rets) / np.sqrt(np.var(rets) + 1e-8)
+    return totol, annual, sharpe
 
 def trade(code1, code2, window=100):
     df = merge_prices(get_price(code1), get_price(code2))
@@ -92,16 +92,17 @@ def trade(code1, code2, window=100):
     for long_term, short_term in strategies:
         strategy = long_term + '+' + short_term
         transactions = backtest(train, test, params, window, model, long_term, short_term)
-        totol, annual, sharp = eval_returns(transactions)
-        result.append([pair, strategy, accuracy, transactions, totol, annual, sharp])
+        totol, annual, sharpe = eval_returns(transactions)
+        result.append([pair, strategy, accuracy, transactions, totol, annual, sharpe])
     return result
 
 def test():
-    transactions = []
-    print('%.4f, %.4f, %.4f' % eval_returns(transactions))
+    pprint(trade('000008', '600446'))
+    # transactions = [(0.057499736069290923, '2016-01-04', '2016-01-11', 'l'), (0.031172174944771317, '2016-01-28', '2016-03-02', 'l'), (-0.1232635715232873, '2016-03-04', '2016-12-30', 'l')]
+    # print('%.4f, %.4f, %.4f' % eval_returns(transactions))
 
 def main():
-    columns = ['pair','strategy','accuracy', 'transactions', 'totol', 'annual', 'sharp']
+    columns = ['pair','strategy','accuracy', 'transactions', 'totol', 'annual', 'sharpe']
     if not os.path.exists(TRADING_RESULTS):
         pd.DataFrame(columns=columns).to_csv(TRADING_RESULTS, index=False)
     counter = 0
@@ -118,5 +119,5 @@ def main():
             pass
 
 if __name__ == '__main__':
-    # test()
-    main()
+    test()
+    # main()
